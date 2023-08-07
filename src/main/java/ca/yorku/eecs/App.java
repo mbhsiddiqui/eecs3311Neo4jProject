@@ -2,9 +2,7 @@ package ca.yorku.eecs;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import com.sun.net.httpserver.HttpServer;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
