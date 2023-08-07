@@ -13,6 +13,7 @@ import org.json.JSONObject;
  * <p>
  * This handler checks if an actor with the provided actorId already exists in the database.
  * If the actor exists, a 400 status code is returned. If not, the actor is added and a 200 status code is returned.
+ * </p>
  *
  * @since 2023-08-06
  */
