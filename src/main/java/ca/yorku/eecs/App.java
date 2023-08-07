@@ -21,6 +21,9 @@ public class App
         server.createContext("/api/v1/addMovie", new AddMovieHandler(driver));
         server.createContext("/api/v1/addRelationship", new AddRelationshipHandler(driver));
 
+        server.createContext("/api/v1/getActor", new GetActorHandler(driver));
+        server.createContext("/api/v1/getMovie", new GetMovieHandler(driver));
+
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
         System.out.printf("Server started on port %d...\n", PORT);
