@@ -11,6 +11,7 @@ buildNumber.properties
 bin/
 workbench.xmi
 .classpath
+.idea/
 .project
 .settings/
 .vscode/
