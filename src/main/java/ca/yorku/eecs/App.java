@@ -3,29 +3,37 @@ package ca.yorku.eecs;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+
+import ca.yorku.eecs.api.get.*;
+import ca.yorku.eecs.api.put.AddActorHandler;
+import ca.yorku.eecs.api.put.AddMovieHandler;
+import ca.yorku.eecs.api.put.AddRelationshipHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 
-public class App 
-{
-    static int PORT = 8080;
-    public static void main(String[] args) throws IOException
-    {
-        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
-        Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"), Config.build().withoutEncryption().toConfig());
+public class App {
 
-        server.createContext("/api/v1/addActor", new AddActorHandler(driver));
-        server.createContext("/api/v1/addMovie", new AddMovieHandler(driver));
-        server.createContext("/api/v1/addRelationship", new AddRelationshipHandler(driver));
+	static int PORT = 8080;
 
-        server.createContext("/api/v1/getActor", new GetActorHandler(driver));
-        server.createContext("/api/v1/getMovie", new GetMovieHandler(driver));
+	public static void main(String[] args) throws IOException {
+		HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
+		Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"), Config.build().withoutEncryption().toConfig());
 
-        server.setExecutor(Executors.newCachedThreadPool());
-        server.start();
-        System.out.printf("Server started on port %d...\n", PORT);
-    }
+		server.createContext("/api/v1/addActor", new AddActorHandler(driver));
+		server.createContext("/api/v1/addMovie", new AddMovieHandler(driver));
+		server.createContext("/api/v1/addRelationship", new AddRelationshipHandler(driver));
+
+		server.createContext("/api/v1/getActor", new GetActorHandler(driver));
+		server.createContext("/api/v1/getMovie", new GetMovieHandler(driver));
+		server.createContext("/api/v1/hasRelationship", new HasRelationshipHandler(driver));
+		server.createContext("/api/v1/computeBaconNumber", new ComputeBaconNumberHandler(driver));
+		server.createContext("/api/v1/computeBaconPath", new ComputeBaconPathHandler(driver));
+
+		server.setExecutor(Executors.newCachedThreadPool());
+		server.start();
+		System.out.printf("Server started on port %d...\n", PORT);
+	}
 }

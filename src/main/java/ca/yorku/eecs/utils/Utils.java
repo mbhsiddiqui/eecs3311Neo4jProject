@@ -1,4 +1,4 @@
-package ca.yorku.eecs;
+package ca.yorku.eecs.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import com.sun.net.httpserver.HttpExchange;
 
-class Utils {        
+public class Utils {
     // use for extracting query params
     public static Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
         Map<String, String> query_pairs = new LinkedHashMap<String, String>();
