@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.json.JSONObject;
 
 public class AddActorHandler implements HttpHandler {
-    Driver driver;
+    private final Driver driver;
 
     public AddActorHandler(Driver driver) {
         this.driver = driver;
