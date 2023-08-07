@@ -1,4 +1,3 @@
-
 package ca.yorku.eecs;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -16,8 +15,8 @@ import java.io.OutputStream;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit test class for AddMovieHandler.
- * It tests the success scenario and failure scenario when a movie is added.
+ * This class contains unit tests for the AddMovieHandler class.
+ * It tests both the success and failure scenarios when a movie is added.
  *
  * @since 2023-08-06
  */
@@ -43,9 +42,10 @@ public class AddMovieHandlerTest {
 	private OutputStream outputStream;
 
 	/**
-	 * Sets up the common mock behaviors used in the test methods.
+	 * This method sets up the common mock behaviors used in the test methods.
+	 * It is run before each test case.
 	 *
-	 * @throws IOException If an I/O error occurs.
+	 * @throws IOException If an I/O error occurs while setting up the mocks.
 	 */
 	@Before
 	public void setUp() throws IOException {
@@ -57,8 +57,8 @@ public class AddMovieHandlerTest {
 	}
 
 	/**
-	 * This test case tests the scenario where a new movie is added successfully.
-	 * The movie does not exist in the database before the operation.
+	 * This test case tests the scenario where a new movie is successfully added.
+	 * In this scenario, the movie does not exist in the database before the operation.
 	 *
 	 * @throws IOException If there is an error reading the HTTP request body.
 	 */
@@ -75,7 +75,7 @@ public class AddMovieHandlerTest {
 	}
 
 	/**
-	 * This test case tests the scenario where movie addition fails because the movie already exists.
+	 * This test case tests the scenario where the addition of a movie fails because the movie already exists.
 	 *
 	 * @throws IOException If there is an error reading the HTTP request body.
 	 */
