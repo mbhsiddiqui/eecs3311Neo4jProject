@@ -16,8 +16,11 @@ public class App
     {
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
         Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"), Config.build().withoutEncryption().toConfig());
+
         server.createContext("/api/v1/addActor", new AddActorHandler(driver));
-        server.createContext("api/v1/addMovie", new AddMovieHandler(driver));
+        server.createContext("/api/v1/addMovie", new AddMovieHandler(driver));
+        server.createContext("/api/v1/addRelationship", new AddRelationshipHandler(driver));
+
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
         System.out.printf("Server started on port %d...\n", PORT);
