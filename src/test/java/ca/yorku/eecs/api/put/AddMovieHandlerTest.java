@@ -1,4 +1,4 @@
-package ca.yorku.eecs;
+package ca.yorku.eecs.api.put;
 
 import ca.yorku.eecs.api.put.AddMovieHandler;
 import com.sun.net.httpserver.HttpExchange;
