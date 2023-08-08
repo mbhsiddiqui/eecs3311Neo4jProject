@@ -7,10 +7,11 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ca.yorku.eecs.api.get.*;
-import ca.yorku.eecs.api.put.AddActorHandler;
-import ca.yorku.eecs.api.put.AddMovieHandler;
-import ca.yorku.eecs.api.put.AddRelationshipHandler;
+import ca.yorku.eecs.handler.RootHandler;
+import ca.yorku.eecs.handler.get.*;
+import ca.yorku.eecs.handler.put.AddActorHandler;
+import ca.yorku.eecs.handler.put.AddMovieHandler;
+import ca.yorku.eecs.handler.put.AddRelationshipHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
@@ -48,6 +49,7 @@ public class App {
 			Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"), Config.build().withoutEncryption().toConfig());
 
 			// Create context for each API endpoint with corresponding handlers
+			server.createContext("/", new RootHandler(driver));
 			server.createContext("/api/v1/addActor", new AddActorHandler(driver));
 			server.createContext("/api/v1/addMovie", new AddMovieHandler(driver));
 			server.createContext("/api/v1/addRelationship", new AddRelationshipHandler(driver));

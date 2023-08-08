@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import ca.yorku.eecs.utils.Utils;
 import com.sun.net.httpserver.HttpHandler;
@@ -13,16 +13,16 @@ import org.json.JSONObject;
 import org.neo4j.driver.v1.Record;
 
 /**
- * Handles the retrieval of movies from the Neo4j database via HTTP requests.
+ * Handles the retrieval of actors from the Neo4j database via HTTP requests.
  * <p>
- * This handler checks if a movie with the given movieId already exists in the database.
- * If it does not, a 404 status code is returned. If it is, the movie with their list of
- * actors and a 200 status code is returned.
+ * This handler checks if an actor with the given actorId already exists in the database.
+ * If it does not, a 404 status code is returned. If it is, the actor with their list of
+ * movies and a 200 status code is returned.
  * </p>
  *
  * @since 2023-08-07
  */
-public class GetMovieHandler implements HttpHandler {
+public class GetActorHandler implements HttpHandler {
     /**
      * The Neo4j database driver instance used for database operations.
      */
@@ -31,22 +31,22 @@ public class GetMovieHandler implements HttpHandler {
     /**
      * Logger for this class
      */
-    private static final Logger logger = Logger.getLogger(GetMovieHandler.class.getName());
+    private static final Logger logger = Logger.getLogger(GetActorHandler.class.getName());
 
     /**
-     * Constructs a new GetMovieHandler with the provided Neo4j driver.
+     * Constructs a new GetActorHandler with the provided Neo4j driver.
      *
      * @param driver The Neo4j driver instance.
      */
-    public GetMovieHandler(Driver driver) {
+    public GetActorHandler(Driver driver) {
         this.driver = driver;
     }
 
     /**
-     * Handles the HTTP request to get a movie from the database.
+     * Handles the HTTP request to get an actor from the database.
      * <p>
-     * If the movie with the given movieId does not exists, a 404 status code is returned.
-     * Otherwise, the movie with their list of actors and a 200 status code is returned.
+     * If the actor with the given actorId does not exists, a 404 status code is returned.
+     * Otherwise, the actor with their list of movies and a 200 status code is returned.
      * </p>
      *
      * @param exchange The HTTP exchange object containing request and response details.
@@ -54,53 +54,53 @@ public class GetMovieHandler implements HttpHandler {
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        logger.log(Level.INFO, "Received request to get movie details.");
+        logger.log(Level.INFO, "Received request to get actor details.");
 
         // Extracting the query parameters
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> queryParams = Utils.splitQuery(query);
 
-        // Check if movieId is provided
-        if (queryParams.containsKey("movieId")) {
-            String movieId = queryParams.get("movieId");
+        // Check if actorId is provided
+        if (queryParams.containsKey("actorId")) {
+            String actorId = queryParams.get("actorId");
 
             try (Session session = driver.session()) {
-                // Run query to fetch movie and actors
-                StatementResult result = session.run("MATCH (m:Movie {movieId: $movieId}) OPTIONAL MATCH (m)<-[:ACTED_IN]-(a:Actor) RETURN m.name as name, m.movieId as movieId, collect(a.actorId) as actors", Values.parameters("movieId", movieId));
+                // Run query to fetch actor and movies
+                StatementResult result = session.run("MATCH (a:Actor {actorId: $actorId}) OPTIONAL MATCH (a)-[:ACTED_IN]->(m:Movie) RETURN a.name as name, a.actorId as actorId, collect(m.movieId) as movies", Values.parameters("actorId", actorId));
 
                 if (result.hasNext()) {
                     Record record = result.single();
                     JSONObject responseJson = new JSONObject();
                     responseJson.put("name", record.get("name").asString());
-                    responseJson.put("movieId", record.get("movieId").asString());
+                    responseJson.put("actorId", record.get("actorId").asString());
 
-                    // Adding actors
-                    JSONArray actorsArray = new JSONArray();
-                    for (Value actorId : record.get("actors").values()) {
-                        if (actorId != null && !actorId.isNull()) { // Checking for null values in case no actors acted in the movie
-                            actorsArray.put(actorId.asString());
+                    // Adding movies
+                    JSONArray moviesArray = new JSONArray();
+                    for (Value movieId : record.get("movies").values()) {
+                        if (movieId != null && !movieId.isNull()) { // Checking for null values in case the actor has not acted in any movies
+                            moviesArray.put(movieId.asString());
                         }
                     }
-                    responseJson.put("actors", actorsArray);
+                    responseJson.put("movies", moviesArray);
 
                     String response = responseJson.toString();
                     exchange.sendResponseHeaders(200, response.length());
                     exchange.getResponseBody().write(response.getBytes());
                 } else {
-                    // Movie not found
-                    String response = "Movie not found.";
+                    // Actor not found
+                    String response = "Actor not found.";
                     exchange.sendResponseHeaders(404, response.length());
                     exchange.getResponseBody().write(response.getBytes());
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error while retrieving movie details: " + e.getMessage(), e);
+                logger.log(Level.SEVERE, "Error while retrieving actor details: " + e.getMessage(), e);
                 String response = "Internal server error.";
                 exchange.sendResponseHeaders(500, response.length());
                 exchange.getResponseBody().write(response.getBytes());
             }
         } else {
-            // movieId not provided in query params
-            String response = "movieId is required.";
+            // actorId not provided in query params
+            String response = "actorId is required.";
             exchange.sendResponseHeaders(400, response.length());
             exchange.getResponseBody().write(response.getBytes());
         }

@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.junit.Before;
@@ -15,24 +15,24 @@ import java.net.URI;
 import static org.mockito.Mockito.*;
 
 /**
- * This class is responsible for testing the ComputeBaconNumberHandler.
+ * This class is responsible for testing the HasRelationshipHandler.
  * It checks for different scenarios using Mockito to mock dependencies.
  *
  * @since 2023-08-07
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ComputeBaconNumberHandlerTest {
+public class HasRelationshipHandlerTest {
 
 	/**
 	 * Mock of the HttpExchange class. This is the argument that will be passed to the handle method
-	 * of ComputeBaconNumberHandler.
+	 * of HasRelationshipHandler.
 	 */
 	@Mock
 	private HttpExchange httpExchange;
 
 	/**
 	 * Mock of the Driver class, which is the Neo4j database driver.
-	 * This is the argument that will be passed to the constructor of ComputeBaconNumberHandler.
+	 * This is the argument that will be passed to the constructor of HasRelationshipHandler.
 	 */
 	@Mock
 	private Driver driver;
@@ -62,37 +62,28 @@ public class ComputeBaconNumberHandlerTest {
 	private Record record;
 
 	/**
-	 * Mock of the Value class. This is used to mock the value of a field in the database record.
-	 */
-	@Mock
-	private Value value;
-
-	/**
 	 * This method is called before each test. It sets up the mocks.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Before
 	public void setUp() throws IOException {
+		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/hasRelationship?actorId=123&movieId=456"));
 		when(httpExchange.getResponseBody()).thenReturn(outputStream);
 		when(driver.session()).thenReturn(session);
 		when(session.run(anyString(), any(Value.class))).thenReturn(statementResult);
 	}
 
 	/**
-	 * This test verifies the successful computation of the Bacon number.
+	 * This test verifies the successful confirmation of a relationship between an actor and a movie.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testComputeBaconNumberHandlerSuccess() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconNumber?actorId=123"));
+	public void testHasRelationshipHandlerSuccess() throws IOException {
 		when(statementResult.hasNext()).thenReturn(true);
-		when(statementResult.single()).thenReturn(record);
-		when(record.get("baconNumber")).thenReturn(value);
-		when(value.asInt()).thenReturn(2);
 
-		ComputeBaconNumberHandler handler = new ComputeBaconNumberHandler(driver);
+		HasRelationshipHandler handler = new HasRelationshipHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));
@@ -100,16 +91,15 @@ public class ComputeBaconNumberHandlerTest {
 	}
 
 	/**
-	 * This test verifies the case where no path to Kevin Bacon is found.
+	 * This test verifies the case where a relationship between an actor and a movie is not found.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testComputeBaconNumberHandlerNoPathFound() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconNumber?actorId=123"));
+	public void testHasRelationshipHandlerRelationshipNotFound() throws IOException {
 		when(statementResult.hasNext()).thenReturn(false);
 
-		ComputeBaconNumberHandler handler = new ComputeBaconNumberHandler(driver);
+		HasRelationshipHandler handler = new HasRelationshipHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));
@@ -117,15 +107,15 @@ public class ComputeBaconNumberHandlerTest {
 	}
 
 	/**
-	 * This test verifies the case where actorId is not provided in the URL.
+	 * This test verifies the case where actorId and/or movieId are not provided in the URL.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testComputeBaconNumberHandlerNoActorId() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconNumber"));
+	public void testHasRelationshipHandlerNoActorOrMovieId() throws IOException {
+		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/hasRelationship"));
 
-		ComputeBaconNumberHandler handler = new ComputeBaconNumberHandler(driver);
+		HasRelationshipHandler handler = new HasRelationshipHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));

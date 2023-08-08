@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import ca.yorku.eecs.utils.Utils;
 import com.sun.net.httpserver.HttpHandler;

@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.junit.Before;
@@ -15,24 +15,24 @@ import java.net.URI;
 import static org.mockito.Mockito.*;
 
 /**
- * This class is responsible for testing the HasRelationshipHandler.
+ * This class is responsible for testing the GetMovieHandler.
  * It checks for different scenarios using Mockito to mock dependencies.
  *
  * @since 2023-08-07
  */
 @RunWith(MockitoJUnitRunner.class)
-public class HasRelationshipHandlerTest {
+public class GetMovieHandlerTest {
 
 	/**
 	 * Mock of the HttpExchange class. This is the argument that will be passed to the handle method
-	 * of HasRelationshipHandler.
+	 * of GetMovieHandler.
 	 */
 	@Mock
 	private HttpExchange httpExchange;
 
 	/**
 	 * Mock of the Driver class, which is the Neo4j database driver.
-	 * This is the argument that will be passed to the constructor of HasRelationshipHandler.
+	 * This is the argument that will be passed to the constructor of GetMovieHandler.
 	 */
 	@Mock
 	private Driver driver;
@@ -68,22 +68,23 @@ public class HasRelationshipHandlerTest {
 	 */
 	@Before
 	public void setUp() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/hasRelationship?actorId=123&movieId=456"));
+		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/getMovie?movieId=123"));
 		when(httpExchange.getResponseBody()).thenReturn(outputStream);
 		when(driver.session()).thenReturn(session);
 		when(session.run(anyString(), any(Value.class))).thenReturn(statementResult);
 	}
 
 	/**
-	 * This test verifies the successful confirmation of a relationship between an actor and a movie.
+	 * This test verifies the successful retrieval of a movie.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testHasRelationshipHandlerSuccess() throws IOException {
+	public void testGetMovieHandlerSuccess() throws IOException {
 		when(statementResult.hasNext()).thenReturn(true);
+		when(statementResult.single()).thenReturn(record);
 
-		HasRelationshipHandler handler = new HasRelationshipHandler(driver);
+		GetMovieHandler handler = new GetMovieHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));
@@ -91,15 +92,15 @@ public class HasRelationshipHandlerTest {
 	}
 
 	/**
-	 * This test verifies the case where a relationship between an actor and a movie is not found.
+	 * This test verifies the case where a movie is not found.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testHasRelationshipHandlerRelationshipNotFound() throws IOException {
+	public void testGetMovieHandlerMovieNotFound() throws IOException {
 		when(statementResult.hasNext()).thenReturn(false);
 
-		HasRelationshipHandler handler = new HasRelationshipHandler(driver);
+		GetMovieHandler handler = new GetMovieHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));
@@ -107,15 +108,15 @@ public class HasRelationshipHandlerTest {
 	}
 
 	/**
-	 * This test verifies the case where actorId and/or movieId are not provided in the URL.
+	 * This test verifies the case where movieId is not provided in the URL.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testHasRelationshipHandlerNoActorOrMovieId() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/hasRelationship"));
+	public void testGetMovieHandlerNoMovieId() throws IOException {
+		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/getMovie"));
 
-		HasRelationshipHandler handler = new HasRelationshipHandler(driver);
+		GetMovieHandler handler = new GetMovieHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));

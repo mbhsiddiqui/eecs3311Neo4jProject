@@ -1,6 +1,5 @@
-package ca.yorku.eecs.api.put;
+package ca.yorku.eecs.handler.put;
 
-import ca.yorku.eecs.api.put.AddMovieHandler;
 import com.sun.net.httpserver.HttpExchange;
 import org.junit.Before;
 import org.junit.Test;
