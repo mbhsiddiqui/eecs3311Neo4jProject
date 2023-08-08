@@ -8,6 +8,8 @@ import org.neo4j.driver.v1.*;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
@@ -21,6 +23,8 @@ import org.json.JSONObject;
  * @since 2023-08-07
  */
 public class ComputeBaconNumberHandler implements HttpHandler {
+
+	private static final Logger logger = Logger.getLogger(ComputeBaconNumberHandler.class.getName());
 
 	/**
 	 * The Neo4j database driver instance used for database operations.
@@ -52,6 +56,8 @@ public class ComputeBaconNumberHandler implements HttpHandler {
 	 */
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		logger.log(Level.INFO, "Received request to compute Bacon number.");
+
 		// Extracting the query parameters
 		String query = exchange.getRequestURI().getQuery();
 		Map<String, String> queryParams = Utils.splitQuery(query);
@@ -74,10 +80,7 @@ public class ComputeBaconNumberHandler implements HttpHandler {
 			}
 
 			try (Session session = driver.session()) {
-				StatementResult result = session.run(
-						"MATCH p=shortestPath((a:Actor {actorId: $actorId})-[:ACTED_IN*]-(b:Actor {actorId: $kevinBaconId})) RETURN length(p)/2 AS baconNumber",
-						Values.parameters("actorId", actorId, "kevinBaconId", KEVIN_BACON_ID)
-				);
+				StatementResult result = session.run("MATCH p=shortestPath((a:Actor {actorId: $actorId})-[:ACTED_IN*]-(b:Actor {actorId: $kevinBaconId})) RETURN length(p)/2 AS baconNumber", Values.parameters("actorId", actorId, "kevinBaconId", KEVIN_BACON_ID));
 
 				if (result.hasNext()) {
 					int baconNumber = result.single().get("baconNumber").asInt();
@@ -93,6 +96,7 @@ public class ComputeBaconNumberHandler implements HttpHandler {
 					exchange.getResponseBody().write(response.getBytes());
 				}
 			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Error while computing Bacon number: " + e.getMessage(), e);
 				String response = "Internal server error.";
 				exchange.sendResponseHeaders(500, response.length());
 				exchange.getResponseBody().write(response.getBytes());
