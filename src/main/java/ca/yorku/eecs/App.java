@@ -1,3 +1,7 @@
+/**
+ * The App class is the main entry point for the application. It sets up an HTTP server, initializes a Neo4j database driver,
+ * and creates handlers for various API endpoints.
+ */
 package ca.yorku.eecs;
 
 import java.io.IOException;
@@ -18,12 +22,22 @@ import org.neo4j.driver.v1.GraphDatabase;
 
 public class App {
 
-	// Server port made constant
+	/**
+	 * Constant representing the server port.
+	 */
 	private static final int PORT = 8080;
 
-	// Logger for this class
+	/**
+	 * Logger for this class.
+	 */
 	private static final Logger logger = Logger.getLogger(App.class.getName());
 
+	/**
+	 * Main method for setting up the HTTP server, initializing the Neo4j driver, and setting up API endpoints.
+	 * In case of any IOException, it logs the error and terminates the application.
+	 *
+	 * @param args Command line arguments.
+	 */
 	public static void main(String[] args) {
 		try {
 			// Create the HTTP server
