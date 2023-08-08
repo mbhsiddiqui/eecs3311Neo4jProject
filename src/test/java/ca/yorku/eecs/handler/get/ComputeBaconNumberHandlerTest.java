@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.junit.Before;
@@ -7,34 +7,32 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.neo4j.driver.v1.*;
-import org.neo4j.driver.v1.types.Node;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 
 /**
- * This class is responsible for testing the ComputeBaconPathHandler.
+ * This class is responsible for testing the ComputeBaconNumberHandler.
  * It checks for different scenarios using Mockito to mock dependencies.
  *
  * @since 2023-08-07
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ComputeBaconPathHandlerTest {
+public class ComputeBaconNumberHandlerTest {
 
 	/**
 	 * Mock of the HttpExchange class. This is the argument that will be passed to the handle method
-	 * of ComputeBaconPathHandler.
+	 * of ComputeBaconNumberHandler.
 	 */
 	@Mock
 	private HttpExchange httpExchange;
 
 	/**
 	 * Mock of the Driver class, which is the Neo4j database driver.
-	 * This is the argument that will be passed to the constructor of ComputeBaconPathHandler.
+	 * This is the argument that will be passed to the constructor of ComputeBaconNumberHandler.
 	 */
 	@Mock
 	private Driver driver;
@@ -70,12 +68,6 @@ public class ComputeBaconPathHandlerTest {
 	private Value value;
 
 	/**
-	 * Mock of the Node class. This is used to mock a node in the path returned by the database query.
-	 */
-	@Mock
-	private Node node;
-
-	/**
 	 * This method is called before each test. It sets up the mocks.
 	 *
 	 * @throws IOException If there's an issue with input or output.
@@ -88,23 +80,19 @@ public class ComputeBaconPathHandlerTest {
 	}
 
 	/**
-	 * This test verifies the successful computation of the Bacon path.
+	 * This test verifies the successful computation of the Bacon number.
 	 *
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testComputeBaconPathHandlerSuccess() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconPath?actorId=123"));
+	public void testComputeBaconNumberHandlerSuccess() throws IOException {
+		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconNumber?actorId=123"));
 		when(statementResult.hasNext()).thenReturn(true);
 		when(statementResult.single()).thenReturn(record);
-		when(record.get("nodes")).thenReturn(value);
-		when(value.asList()).thenReturn(Arrays.asList(value, value));
-		when(value.asNode()).thenReturn(node);
-		when(node.hasLabel("Actor")).thenReturn(true);
-		when(node.get("actorId")).thenReturn(value);
-		when(value.asString()).thenReturn("123");
+		when(record.get("baconNumber")).thenReturn(value);
+		when(value.asInt()).thenReturn(2);
 
-		ComputeBaconPathHandler handler = new ComputeBaconPathHandler(driver);
+		ComputeBaconNumberHandler handler = new ComputeBaconNumberHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));
@@ -117,11 +105,11 @@ public class ComputeBaconPathHandlerTest {
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testComputeBaconPathHandlerNoPathFound() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconPath?actorId=123"));
+	public void testComputeBaconNumberHandlerNoPathFound() throws IOException {
+		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconNumber?actorId=123"));
 		when(statementResult.hasNext()).thenReturn(false);
 
-		ComputeBaconPathHandler handler = new ComputeBaconPathHandler(driver);
+		ComputeBaconNumberHandler handler = new ComputeBaconNumberHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));
@@ -134,10 +122,10 @@ public class ComputeBaconPathHandlerTest {
 	 * @throws IOException If there's an issue with input or output.
 	 */
 	@Test
-	public void testComputeBaconPathHandlerNoActorId() throws IOException {
-		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconPath"));
+	public void testComputeBaconNumberHandlerNoActorId() throws IOException {
+		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconNumber"));
 
-		ComputeBaconPathHandler handler = new ComputeBaconPathHandler(driver);
+		ComputeBaconNumberHandler handler = new ComputeBaconNumberHandler(driver);
 		handler.handle(httpExchange);
 
 		verify(outputStream).write(any(byte[].class));

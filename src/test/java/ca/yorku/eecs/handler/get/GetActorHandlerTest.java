@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.junit.Before;

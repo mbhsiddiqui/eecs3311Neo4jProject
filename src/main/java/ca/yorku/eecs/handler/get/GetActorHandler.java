@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import ca.yorku.eecs.utils.Utils;
 import com.sun.net.httpserver.HttpHandler;
@@ -6,6 +6,8 @@ import com.sun.net.httpserver.HttpExchange;
 import org.neo4j.driver.v1.*;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.neo4j.driver.v1.Record;
@@ -27,9 +29,14 @@ public class GetActorHandler implements HttpHandler {
     private final Driver driver;
 
     /**
+     * Logger for this class
+     */
+    private static final Logger logger = Logger.getLogger(GetActorHandler.class.getName());
+
+    /**
      * Constructs a new GetActorHandler with the provided Neo4j driver.
      *
-     * @param driver
+     * @param driver The Neo4j driver instance.
      */
     public GetActorHandler(Driver driver) {
         this.driver = driver;
@@ -47,6 +54,8 @@ public class GetActorHandler implements HttpHandler {
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        logger.log(Level.INFO, "Received request to get actor details.");
+
         // Extracting the query parameters
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> queryParams = Utils.splitQuery(query);
@@ -84,7 +93,7 @@ public class GetActorHandler implements HttpHandler {
                     exchange.getResponseBody().write(response.getBytes());
                 }
             } catch (Exception e) {
-                // Exception occurred
+                logger.log(Level.SEVERE, "Error while retrieving actor details: " + e.getMessage(), e);
                 String response = "Internal server error.";
                 exchange.sendResponseHeaders(500, response.length());
                 exchange.getResponseBody().write(response.getBytes());

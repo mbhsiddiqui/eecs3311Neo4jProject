@@ -1,4 +1,4 @@
-package ca.yorku.eecs.api.get;
+package ca.yorku.eecs.handler.get;
 
 import ca.yorku.eecs.utils.Utils;
 import com.sun.net.httpserver.HttpHandler;
@@ -6,6 +6,8 @@ import com.sun.net.httpserver.HttpExchange;
 import org.neo4j.driver.v1.*;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles the verification of an ACTED_IN relationship between an actor and a movie in the Neo4j database via HTTP requests.
@@ -21,6 +23,11 @@ public class HasRelationshipHandler implements HttpHandler {
 	 * The Neo4j database driver instance used for database operations.
 	 */
 	private final Driver driver;
+
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = Logger.getLogger(HasRelationshipHandler.class.getName());
 
 	/**
 	 * Constructs a new HasRelationshipHandler with the provided Neo4j driver.
@@ -42,6 +49,8 @@ public class HasRelationshipHandler implements HttpHandler {
 	 */
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		logger.log(Level.INFO, "Received request to verify ACTED_IN relationship.");
+
 		// Extracting the query parameters
 		String query = exchange.getRequestURI().getQuery();
 		Map<String, String> queryParams = Utils.splitQuery(query);
@@ -66,6 +75,7 @@ public class HasRelationshipHandler implements HttpHandler {
 					exchange.getResponseBody().write(response.getBytes());
 				}
 			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Error while verifying relationship: " + e.getMessage(), e);
 				String response = "Internal server error.";
 				exchange.sendResponseHeaders(500, response.length());
 				exchange.getResponseBody().write(response.getBytes());
