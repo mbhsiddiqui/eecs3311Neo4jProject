@@ -16,36 +16,70 @@ import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * This class is responsible for testing the ComputeBaconPathHandler.
+ * It checks for different scenarios using Mockito to mock dependencies.
+ *
+ * @since 2023-08-07
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ComputeBaconPathHandlerTest {
 
+	/**
+	 * Mock of the HttpExchange class. This is the argument that will be passed to the handle method
+	 * of ComputeBaconPathHandler.
+	 */
 	@Mock
 	private HttpExchange httpExchange;
 
+	/**
+	 * Mock of the Driver class, which is the Neo4j database driver.
+	 * This is the argument that will be passed to the constructor of ComputeBaconPathHandler.
+	 */
 	@Mock
 	private Driver driver;
 
+	/**
+	 * Mock of the Session class. This is used to mock the database session.
+	 */
 	@Mock
 	private Session session;
 
-	@Mock
-	private Transaction transaction;
-
+	/**
+	 * Mock of the StatementResult class. This is used to mock the result of the database query.
+	 */
 	@Mock
 	private StatementResult statementResult;
 
+	/**
+	 * Mock of the OutputStream class. This is used to mock the output stream of the HttpExchange.
+	 */
 	@Mock
 	private OutputStream outputStream;
 
+	/**
+	 * Mock of the Record class. This is used to mock a record of the database query result.
+	 */
 	@Mock
 	private Record record;
 
+	/**
+	 * Mock of the Value class. This is used to mock the value of a field in the database record.
+	 */
 	@Mock
 	private Value value;
 
+	/**
+	 * Mock of the Node class. This is used to mock a node in the path returned by the database query.
+	 */
 	@Mock
 	private Node node;
 
+	/**
+	 * This method is called before each test. It sets up the mocks.
+	 *
+	 * @throws IOException If there's an issue with input or output.
+	 */
 	@Before
 	public void setUp() throws IOException {
 		when(httpExchange.getResponseBody()).thenReturn(outputStream);
@@ -53,6 +87,11 @@ public class ComputeBaconPathHandlerTest {
 		when(session.run(anyString(), any(Value.class))).thenReturn(statementResult);
 	}
 
+	/**
+	 * This test verifies the successful computation of the Bacon path.
+	 *
+	 * @throws IOException If there's an issue with input or output.
+	 */
 	@Test
 	public void testComputeBaconPathHandlerSuccess() throws IOException {
 		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconPath?actorId=123"));
@@ -72,6 +111,11 @@ public class ComputeBaconPathHandlerTest {
 		verify(outputStream).close();
 	}
 
+	/**
+	 * This test verifies the case where no path to Kevin Bacon is found.
+	 *
+	 * @throws IOException If there's an issue with input or output.
+	 */
 	@Test
 	public void testComputeBaconPathHandlerNoPathFound() throws IOException {
 		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconPath?actorId=123"));
@@ -84,6 +128,11 @@ public class ComputeBaconPathHandlerTest {
 		verify(outputStream).close();
 	}
 
+	/**
+	 * This test verifies the case where actorId is not provided in the URL.
+	 *
+	 * @throws IOException If there's an issue with input or output.
+	 */
 	@Test
 	public void testComputeBaconPathHandlerNoActorId() throws IOException {
 		when(httpExchange.getRequestURI()).thenReturn(URI.create("/api/v1/computeBaconPath"));
