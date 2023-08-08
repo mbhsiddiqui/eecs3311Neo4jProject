@@ -9,6 +9,8 @@ import org.neo4j.driver.v1.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,6 +26,8 @@ import org.neo4j.driver.v1.types.Node;
  * @since 2023-08-07
  */
 public class ComputeBaconPathHandler implements HttpHandler {
+
+	private static final Logger logger = Logger.getLogger(ComputeBaconPathHandler.class.getName());
 
 	/**
 	 * The Neo4j database driver instance used for database operations.
@@ -55,6 +59,8 @@ public class ComputeBaconPathHandler implements HttpHandler {
 	 */
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		logger.log(Level.INFO, "Received request to compute Bacon path.");
+
 		// Extracting the query parameters
 		String query = exchange.getRequestURI().getQuery();
 		Map<String, String> queryParams = Utils.splitQuery(query);
@@ -96,7 +102,6 @@ public class ComputeBaconPathHandler implements HttpHandler {
 						}
 					}
 
-
 					JSONObject responseJson = new JSONObject();
 					responseJson.put("baconPath", baconPath);
 
@@ -109,6 +114,7 @@ public class ComputeBaconPathHandler implements HttpHandler {
 					exchange.getResponseBody().write(response.getBytes());
 				}
 			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Error while computing Bacon path: " + e.getMessage(), e);
 				String response = "Internal server error.";
 				exchange.sendResponseHeaders(500, response.length());
 				exchange.getResponseBody().write(response.getBytes());
