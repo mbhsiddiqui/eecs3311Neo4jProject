@@ -1,7 +1,4 @@
-/**
- * The App class is the main entry point for the application. It sets up an HTTP server, initializes a Neo4j database driver,
- * and creates handlers for various API endpoints.
- */
+
 package ca.yorku.eecs;
 
 import java.io.IOException;
@@ -20,6 +17,10 @@ import org.neo4j.driver.v1.Config;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 
+/**
+ * The App class is the main entry point for the application. It sets up an HTTP server, initializes a Neo4j database driver,
+ * and creates handlers for various API endpoints.
+ */
 public class App {
 
 	/**
