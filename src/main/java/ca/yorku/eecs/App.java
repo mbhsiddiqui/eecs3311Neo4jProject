@@ -58,9 +58,6 @@ public class App {
 			server.createContext("/api/v1/hasRelationship", new HasRelationshipHandler(driver));
 			server.createContext("/api/v1/computeBaconNumber", new ComputeBaconNumberHandler(driver));
 			server.createContext("/api/v1/computeBaconPath", new ComputeBaconPathHandler(driver));
-			
-			RetrieveDataHandler retrieveDataHandler = new RetrieveDataHandler(driver);
-            server.createContext("/api/v1/retrieveData", retrieveDataHandler);
 
 			// Use a thread pool executor for the server
 			server.setExecutor(Executors.newCachedThreadPool());
